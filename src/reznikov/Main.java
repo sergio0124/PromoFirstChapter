@@ -11,6 +11,7 @@ public class Main<T> {
         return generateArray(NUMBER_OF_ROWS);
     }
 
+
     static List<Integer> generateArray(int size) {
         List<Integer> matrix = new ArrayList<>(size);
         Random random = new Random();
@@ -24,6 +25,10 @@ public class Main<T> {
     }
 
 
+    /**
+     * С определенным шагом в выделенных диапазонах выполняем метод
+     * {@link #sortComparison(int, Comparator<Integer>)}
+     */
     public static void main(String[] args) {
 
         Main<Integer> main = new Main<>();
@@ -32,7 +37,7 @@ public class Main<T> {
         int size = 100;
         int step = 25000;
         while (size <= 1000000) {
-            if(size == 1000 || size == 10000 || size == 50000 || size % 100000 == 0){
+            if (size == 1000 || size == 10000 || size == 50000 || size % 100000 == 0) {
                 System.out.println("size       ReznikovList  LinkedList  ArrayList");
             }
             System.out.println(main.sortComparison(size, comparator));
@@ -49,6 +54,10 @@ public class Main<T> {
     }
 
 
+    /**
+     * Проходит по коллекции через {@link Iterator<T>}. Если встречает неправильную последовательность,
+     * выводит элементы в консоль и в будующем возвращает {@code false}, в ином случае {@code true}
+     */
     boolean isSorted(List<T> list, Comparator<T> comparator) {
         var iterator = list.iterator();
         boolean sorted = true;
@@ -66,6 +75,7 @@ public class Main<T> {
     }
 
 
+    //Удобный метод, решил оставить, он удобный
     private void sortAndPrintTime(List<T> list, Comparator<T> comparator) {
         long time = System.currentTimeMillis();
         list.sort(comparator);
@@ -74,6 +84,16 @@ public class Main<T> {
     }
 
 
+    /**
+     * Сначала генерируется заданное число массивов данных с помощью метода {@link #generateArray(int)}.
+     * Затем для каждой реализации для каждого сгенерированного массива выполняем:
+     * - Очищаем список
+     * - Добавляем массив данных
+     * - Сортируем и замеряем время.
+     * Записываем результаты измерений и находим среднее по каждой реализации. Найденные данные кладем в {@code StringBuilder}.
+     * Если после сортировки метод {@link #isSorted(List, Comparator)} выдаст {@code false}, в результирующей строке
+     * будет слово error вместо времени.
+     * */
     String sortComparison(int size, Comparator<Integer> comparator) {
         int NUMBER_COUNTS = 10;
         int NUMBER_REALIZATIONS = 3;

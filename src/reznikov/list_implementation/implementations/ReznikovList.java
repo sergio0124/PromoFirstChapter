@@ -144,6 +144,11 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        /*  Я использовал здесь стрим. Не считаю это нарушением, так как для получения всех элементов коллекции
+        * необходимо воспользоваться внутренней реализацией итератора, поэтому нет принципиального различия между
+        * использованием foreach(:), iterator() или stream()
+        * Если это принципиально неприемлемо, могу исправить
+        * */
         return c.stream().filter(this::add).count() > 0;
     }
 
@@ -389,6 +394,10 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
         return "Резников С.А. Группа 2";
     }
 
+    /**
+     * До и включая 7000 выполняет соритировку рассческой, после - при помощи {@link ForkJoinPool}.
+     * Граница разделения получена опытно.
+     */
     @Override
     public void sort(Comparator<? super T> c) {
         if (size() <= 7000) {
@@ -400,7 +409,9 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
         }
     }
 
-
+    /**
+     * Сортировка рассческой. Использует метод {@link #replaceNodes(Node, Node)}.
+     */
     public void sortCurrent(Comparator<? super T> c) {
         int gap = size(head, tail);
         boolean swapped = true;
@@ -427,6 +438,9 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
         }
     }
 
+    /**
+     * Метод меняет местами 2 {@link Node<T>}.
+     */
     private void replaceNodes(Node<T> first, Node<T> second) {
         Node<T> firstNext = first.getNextNode();
         Node<T> firstPrev = first.getPreviousNode();
@@ -482,6 +496,11 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
     }
 
 
+    /**
+     * Сливает получившиеся отсортированные связные списки. Для этого берет элемент входного списка и находит
+     * первый больший элемент во внутреннем списке. Затем элемент вставляется во внутренний список перед большим,
+     * берется следующий элемент входного списка и продолжается поиск большего элемента.
+     */
     void merge(ReznikovList<T> list, Comparator<? super T> comparator) {
         var second_element = list.head;
         var first_element = head;
@@ -551,15 +570,15 @@ public class ReznikovList<T> implements List<T>, AuthorHolder {
             secondList.head = nextFromMiddle;
             secondList.tail = list.tail;
 
-            ForkSorting firstHalfArrayValueSumCounter =
+            ForkSorting firstHalf =
                     new ForkSorting(firstList, comparator);
-            ForkSorting secondHalfArrayValueSumCounter =
+            ForkSorting secondHalf =
                     new ForkSorting(secondList, comparator);
-            firstHalfArrayValueSumCounter.fork();
-            secondHalfArrayValueSumCounter.fork();
+            firstHalf.fork();
+            secondHalf.fork();
 
-            var result = firstHalfArrayValueSumCounter.join();
-            result.merge(secondHalfArrayValueSumCounter.join(), comparator);
+            var result = firstHalf.join();
+            result.merge(secondHalf.join(), comparator);
             return result;
         }
     }

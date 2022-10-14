@@ -5,13 +5,13 @@ import java.util.ListIterator;
 
 public class ReznikovListIterator<T> implements ListIterator<T> {
 
-    ReznikovCursor<T> cursor;
+    ReznikovCursor cursor;
     List<T> collection;
 
 
     public ReznikovListIterator(Node<T> current, List<T> collection) {
         this.collection = collection;
-        cursor = new ReznikovCursor<>(current, collection.indexOf(current.getObject()));
+        cursor = new ReznikovCursor(current, collection.indexOf(current.getObject()));
     }
 
     @Override
@@ -78,32 +78,31 @@ public class ReznikovListIterator<T> implements ListIterator<T> {
         }
         cursor.index++;
     }
-}
 
+    private class ReznikovCursor {
+        Node<T> previous;
+        Node<T> next;
+        Node<T> last;
+        int index;
 
-class ReznikovCursor<T> {
-    Node<T> previous;
-    Node<T> next;
-    Node<T> last;
-    int index;
+        ReznikovCursor(Node<T> next, int index) {
+            this.next = next;
+            this.previous = next.getPreviousNode();
+            this.index = index;
+        }
 
-    ReznikovCursor(Node<T> next, int index) {
-        this.next = next;
-        this.previous = next.getPreviousNode();
-        this.index = index;
-    }
+        void forward() {
+            previous = next;
+            next = next.getNextNode();
+            last = previous;
+            index++;
+        }
 
-    void forward() {
-        previous = next;
-        next = next.getNextNode();
-        last = previous;
-        index++;
-    }
-
-    void back() {
-        next = previous;
-        previous = previous.getPreviousNode();
-        last = next;
-        index--;
+        void back() {
+            next = previous;
+            previous = previous.getPreviousNode();
+            last = next;
+            index--;
+        }
     }
 }
