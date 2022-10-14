@@ -9,7 +9,6 @@ import reznikov.list_implementation.models.ReznikovListIterator;
 import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReznikovList<T> implements List<T>, AuthorHolder {
 
